@@ -2,6 +2,7 @@ package agenda.model.DAO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import agenda.model.Contato;
@@ -29,4 +30,31 @@ public class ContatoDAO {
             return false; // Retorna false em caso de erro
         }
     }
+
+    public ResultSet buscarContatoDAO(int id) {
+        ResultSet resultadoBusca = null;
+        String sql = "";
+
+        try {
+
+            if (id == 0) {
+                sql = "SELECT * FROM contato";
+            } else {
+                sql = "SELECT * FROM contato WHERE id = ?";
+            }
+
+            ConexaoDB conexaoDB = new ConexaoDB();
+            Connection conn = conexaoDB.dbConnection();
+
+            PreparedStatement statement = conn.prepareStatement(sql);
+            resultadoBusca = statement.executeQuery();
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+        }
+
+        return resultadoBusca;
+    }
+
 }

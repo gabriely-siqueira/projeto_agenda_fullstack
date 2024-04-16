@@ -3,6 +3,9 @@ package agenda.model;
 import agenda.model.DAO.ContatoDAO;
 import agenda.view.Tela;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class Agenda {
 
     public void iniciarAgenda() {
@@ -29,13 +32,19 @@ public class Agenda {
                     cadastrarContato(tela);
                     break;
                 case "2":
-                    // buscar buscarContato(tela);
+                    // buscar
+                    try {
+                        buscarContato(tela);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case "3":
                     //editarContato(tela);
                     break;
                 case "4":
                     //excluirContato(tela);
+                    break;
                 default:
                     int sair = tela.confirmar("Deseja sair?", "Encerrar", 3);
                     if (sair == 0) {
@@ -66,37 +75,29 @@ public class Agenda {
         //Envia o Contato (preenchido) para o DB
         ContatoDAO contatoDAO = new ContatoDAO();
         contatoDAO.cadastrarContatoDAO(contato);
-        // Mostra a mensagem de sucesso na tela 
+        // Mostra a mensagem de sucesso na tela
         tela.mostrar("Contato cadastrado com sucesso!", "Cadastro", 1);
-
-        
     }
 
-
-/* 
-    private void buscarContato(Tela tela) {
-        // Guarda o número de registro na lista
-        int numeroRegistro = Lista.getInstance().size();
-        if (Lista.getInstance().size() > 0) {
-            String listaContatos = "";
-
-            for (int i = 0; i < numeroRegistro; i++) {
-                listaContatos += "ID: " + (i + 1)
-                        + "\nNome: " + Lista.getInstance().get(i).getNome()
-                        + "\nEmail: " + Lista.getInstance().get(i).getEmail()
-                        + "\nFone: " + Lista.getInstance().get(i).getFone()
-                        + "\n\n";
-            }
-            // mostra resultado
-            tela.mostrar(listaContatos, "Contatos", 1);
-
-        } else {
+    private void buscarContato(Tela tela) throws SQLException {
+        ContatoDAO contatoDAO = new ContatoDAO();
+        ResultSet resultado = contatoDAO.buscarContatoDAO(0); //busca todos os registros
+        if (!resultado.next()) {//se não tiver registro
             tela.mostrar("Nenhum contato registrado", "Contatos", 0);
+        } else {
+            String contatos = "";
+            do {
+                contatos += "ID: " + resultado.getInt("id")
+                        + "\nNome: " + resultado.getString("nome")
+                        + "\nEmail: " + resultado.getString("email")
+                        + "\nFone: " + resultado.getString("fone")
+                        + "\n\n";
+            } while (resultado.next());
+            // mostra resultado
+            tela.mostrar(contatos, "Contatos", 1);
         }
-
     }
-*/
-
+}
 /* 
     private void editarContato(Tela tela) {
         buscarContato(tela);
@@ -173,4 +174,3 @@ public class Agenda {
         }
     }
     */
-}
